@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chinchón Online</title>
+    <link rel="stylesheet" href="/static/style.css?v=13">
+</head>
+<body>
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>Chinchón Online</h1>
+            <input type="text" id="username" placeholder="Tu Nombre">
+            <input type="text" id="room-code" placeholder="Código de Sala">
+            <button onclick="joinGame()">Entrar a Jugar</button>
+        </div>
+    </div>
+
+    <div id="game-board" style="display: none;">
+        <div id="opponent-area">
+            <div id="scoreboard" style="background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 10px; font-weight: bold; display: inline-block; margin-bottom: 10px;">Esperando...</div>
+            
+            <div id="status-container" style="width: 100%; display: flex; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+                <h2 id="opponent-status" class="status-text"></h2>
+            </div>
+        </div>
+
+        <div id="center-table">
+            <div id="deck" class="card-slot">
+                <div style="font-size: 0.8em;">MAZO</div>
+                <div id="deck-count">0</div>
+            </div>
+            <div id="pozo-container">
+                <p class="zona-titulo">POZO</p>
+                <div id="pozo" class="card-slot"></div>
+            </div>
+        </div>
+
+        <div id="player-area">
+            <div class="controls">
+                <h2 id="turn-indicator">Tu mano:</h2>
+                <div>
+                    <button id="sort-btn">Ordenar</button>
+                    <button id="close-btn" disabled>CERRAR</button>
+                </div>
+            </div>
+            <div id="my-hand" class="hand"></div>
+        </div>
+    </div>
+
+    <div id="showdown-overlay" style="display: none;"></div>
+
+    <div id="game-over-overlay" style="display: none;">
+        <div class="game-over-box">
+            <div id="trophy-icon">🏆</div>
+            <h1 id="game-over-title">FIN DE PARTIDA</h1>
+            <div id="final-results"></div>
+            <button onclick="location.reload()" class="reload-btn">Volver al Inicio</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js?v=13"></script>
+</body>
+</html>

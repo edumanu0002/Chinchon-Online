@@ -1,0 +1,219 @@
+body {
+    background-color: #2b7a0b;
+    /* Textura de tapete añadida al fondo original */
+    background-image: 
+        radial-gradient(circle at center, rgba(43, 122, 11, 0.8) 0%, rgba(26, 71, 42, 1) 100%),
+        url('https://www.transparenttextures.com/patterns/felt.png');
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* LOGIN ORIGINAL */
+#login-screen {
+    position: fixed;
+    width: 100%; height: 100%;
+    background: #1a472a;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100;
+}
+.login-box {
+    background: white; padding: 40px; border-radius: 15px;
+    display: flex; flex-direction: column; gap: 15px; color: black;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
+}
+.login-box input { padding: 12px; border: 1px solid #ccc; border-radius: 5px; }
+.login-box button { padding: 12px; background: #2b7a0b; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+/* TABLERO ORIGINAL */
+#game-board { display: flex; flex-direction: column; justify-content: space-around; height: 95vh; width: 95vw; max-width: 900px; }
+
+#center-table { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 40px; 
+    padding: 20px; 
+    background-color: rgba(0,0,0,0.2); 
+    border-radius: 15px; 
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.3);
+}
+
+.card-slot, .card { width: 80px; height: 120px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; }
+
+.card-slot { background-color: rgba(255,255,255,0.1); border: 2px dashed white; cursor: pointer; }
+.zona-titulo { margin: 0 0 5px 0; font-size: 0.8em; font-weight: bold; }
+
+#deck { 
+    background: #1e3c72; 
+    border: 2px solid white; 
+    box-shadow: 3px 3px 0px #0d2346; /* Relieve de mazo */
+}
+
+/* CARTAS CON ANIMACIONES ACTUALIZADAS */
+.card { 
+    background-color: white; 
+    color: black; 
+    border: 1px solid #ccc; 
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3); 
+    cursor: pointer; 
+    position: relative;
+    /* Transición elástica más lenta (0.8s) como pediste */
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, left 0.8s ease, top 0.8s ease;
+}
+
+/* Animación individual lenta para cuando robas o aparecen por primera vez */
+.card-animate {
+    animation: cardEntrance 0.8s ease-out backwards;
+}
+
+@keyframes cardEntrance {
+    from { opacity: 0; transform: translateY(50px) rotate(15deg); filter: brightness(1.5); }
+    to { opacity: 1; transform: translateY(0) rotate(0deg); filter: brightness(1); }
+}
+
+/* Efecto para el botón ordenar */
+.stacking {
+    transform: translate(-50%, -50%) rotate(0deg) !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    z-index: 200;
+}
+
+.card:not(.stacking):hover { 
+    transform: translateY(-20px) scale(1.1); 
+    z-index: 100; 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5); 
+}
+
+.card:active {
+    transform: translateY(-15px) scale(0.95);
+}
+
+/* BORDES DE GRUPOS */
+.grupo-1 { 
+    box-shadow: 0 0 0 4px #007bff, 0 5px 15px rgba(0,123,255,0.5); 
+    transform: translateY(-5px);
+}
+.grupo-2 { 
+    box-shadow: 0 0 0 4px #ff007f, 0 5px 15px rgba(255,0,127,0.5); 
+    transform: translateY(-5px);
+}
+
+.hand { 
+    display: flex; 
+    justify-content: center; 
+    gap: 10px; 
+    min-height: 130px; 
+    flex-wrap: wrap; 
+    padding: 20px;
+    position: relative;
+}
+
+.oros { color: #b8860b; border-left: 4px solid #b8860b; }
+.copas { color: #d32f2f; border-left: 4px solid #d32f2f; }
+.espadas { color: #1976d2; border-left: 4px solid #1976d2; }
+.bastos { color: #388e3c; border-left: 4px solid #388e3c; }
+
+.comodin { background: linear-gradient(45deg, #ffd700, #ff8c00); color: white; border: 2px solid gold; }
+
+.controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+#sort-btn { padding: 8px 15px; background: #ffd700; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: #333; }
+
+#close-btn { 
+    padding: 8px 15px; 
+    background: #555; 
+    color: #888; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: not-allowed; 
+    font-weight: bold; 
+}
+
+#close-btn.ready { 
+    background: #ff4444 !important; 
+    color: white !important; 
+    cursor: pointer !important; 
+    box-shadow: 0 0 15px red !important; 
+    animation: pulseClose 1s infinite !important; 
+}
+
+/* PANTALLA REVELACIÓN FINAL CON BLUR */
+#showdown-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); /* Fondo un poco más transparente para ver el blur */
+    backdrop-filter: blur(8px); /* FILTRO DE PAUSA */
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* ESTILOS DE PARTÍCULAS DE ORO */
+.gold-particle {
+    position: fixed;
+    width: 6px; height: 6px;
+    background: gold;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1100;
+    animation: goldFall linear forwards;
+}
+
+@keyframes goldFall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+.showdown-player { display: flex; align-items: center; gap: 30px; margin-bottom: 40px; width: 90%; justify-content: center; }
+.round-points { font-size: 4em; font-weight: 900; min-width: 150px; text-align: center; }
+.player-info-reveal { display: flex; flex-direction: column; align-items: center; }
+
+.showdown-player h1 { font-size: 2em; margin: 0; font-weight: 900; }
+.showdown-player h2 { color: white; margin-bottom: 10px; opacity: 0.8; }
+.reveal-cards { display: flex; gap: 10px; justify-content: center; }
+
+/* ESTILOS DINÁMICOS */
+.fade-in { animation: fadeIn 0.5s forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.status-text { transition: opacity 0.3s ease, transform 0.3s ease; }
+.fade-out-turn { opacity: 0; transform: translateY(-10px); }
+
+.boca-abajo { background: #1e3c72 !important; border: 2px solid white !important; }
+.boca-abajo div { display: none !important; }
+
+.chinchon-glow { animation: glowText 1s infinite alternate; }
+
+@keyframes glowText {
+    from { text-shadow: 0 0 10px gold, 0 0 20px yellow; transform: scale(1); }
+    to { text-shadow: 0 0 20px gold, 0 0 40px orange; transform: scale(1.1); }
+}
+
+@keyframes pulseClose { 
+    0% { transform: scale(1); } 
+    50% { transform: scale(1.05); } 
+    100% { transform: scale(1); } 
+}
+
+.score-ticking { color: #ffd700; transform: scale(1.1); transition: 0.1s; }
+
+/* PANTALLA GAME OVER ORIGINAL */
+#game-over-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    display: none; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 2000;
+}
+#game-over-title { font-size: 4em; font-weight: 900; color: gold; margin: 0; }
+#final-results { margin: 30px; font-size: 1.5em; text-align: center; }
+.reload-btn { padding: 12px 25px; background: gold; color: black; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin: 10px; }
