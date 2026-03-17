@@ -1,12 +1,22 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import random
 import json
 import asyncio
 import itertools
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
@@ -31,28 +41,23 @@ def get_best_points_for_loser(hand):
             gaps += (nums[i+1] - nums[i] - 1)
         return gaps <= wildcards
 
-    # Nueva sub-función para contar puntos respetando la penalización del comodín
     def calculate_score(cards):
         total = 0
         for c in cards:
             if c["comodin"]:
-                total += 25  # Si el comodín no está en un grupo, suma 25
+                total += 25
             else:
                 total += c["numero"]
         return total
 
-    # Puntos base: todas las cartas sueltas
     best_pts = calculate_score(hand)
     
-    # Probar combinaciones de 3 a 7 cartas
     for r in range(3, 8):
         for combo in itertools.combinations(hand, r):
             if is_valid(combo):
                 remaining = [c for c in hand if c not in combo]
-                # Puntos con un grupo formado
                 pts = calculate_score(remaining)
                 
-                # Intentar buscar un segundo grupo en las cartas restantes
                 for r2 in range(3, len(remaining) + 1):
                     for combo2 in itertools.combinations(remaining, r2):
                         if is_valid(combo2):
@@ -113,10 +118,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_name: st
             if room["started"] and p_names[room["turn"]] == player_name:
                 mano = room["players"][player_name]["hand"]
                 
-                # ROBAR DEL MAZO CON RECICLAJE
                 if msg["type"] == "draw_deck" and len(mano) == 7:
                     if not room["deck"]:
-                        # Mazo vacío: Reciclar pozo (dejando la última)
                         if len(room["pozo"]) > 1:
                             last_pozo = room["pozo"].pop()
                             room["deck"] = room["pozo"]
@@ -126,16 +129,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_name: st
                     if room["deck"]: 
                         mano.append(room["deck"].pop())
                 
-                # ROBAR DEL POZO
                 elif msg["type"] == "draw_pozo" and len(mano) == 7:
                     if room["pozo"]: mano.append(room["pozo"].pop())
                 
-                # DESCARTAR
                 elif msg["type"] == "discard" and len(mano) == 8:
                     room["pozo"].append(mano.pop(msg["card_idx"]))
                     room["turn"] = (room["turn"] + 1) % 2
                 
-                # CERRAR RONDA
                 elif msg["type"] == "close":
                     room["players"][player_name]["score"] += msg["points"]
                     closer_card = mano.pop(msg["card_idx"])
@@ -151,7 +151,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_name: st
                         else:
                             round_results[n] = msg["points"]
                     
-                    # Chequear si alguien llegó a 101
                     game_over = any(p["score"] >= 101 for p in room["players"].values())
                     
                     showdown_data = {
@@ -166,7 +165,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_name: st
                     for p in room["players"].values():
                         await p["ws"].send_text(json.dumps(showdown_data))
                     
-                    await asyncio.sleep(6) # Un segundo más para ver el Game Over si ocurre
+                    await asyncio.sleep(6)
                     
                     if game_over:
                         room["started"] = False
